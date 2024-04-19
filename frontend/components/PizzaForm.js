@@ -1,4 +1,5 @@
-import React from 'react'
+import axios from 'axios';
+import React, {useState} from 'react'
 
 const initialFormState = { // suggested
   fullName: '',
@@ -10,12 +11,63 @@ const initialFormState = { // suggested
   '5': false,
 }
 
+let postUrl = 'http://localhost:9009/api/pizza/order'
+
 export default function PizzaForm() {
+  const [fullName, setFullName] = useState(initialFormState.fullName);
+  const [size, setSize] = useState(initialFormState.size);
+  const [toppings, setToppings] = useState([]);
+  const [success, setSuccess] = useState(false);
+  const [failure, setFailure] = useState(false);
+  const [message, setMessage] = useState('');
+
+  function handleChangeFullName (event) {
+    setFullName(event.target.value);
+  }
+
+  function handleChangeSize(event) {
+    setSize(event.target.value);
+  }
+
+  function handleChangeToppings() {
+    let newToppingsList = [];
+    const toppingsInput = document.getElementById('toppingsInput').querySelectorAll('label');
+    for(let i = 0; i < toppingsInput.length; i++) {
+      let t = toppingsInput[i].querySelector('input');
+      if(t.checked) {
+        newToppingsList.push(t.name);
+      }
+    }
+
+    setToppings(newToppingsList);
+  }
+
+  function submitOrder(event) {
+    event.preventDefault();
+    let orderObj = {
+      fullName: fullName,
+      size: size,
+      toppings: toppings
+    };
+    axios
+      .post(postUrl, orderObj)
+      .then((res) => {
+        setSuccess(true);
+        setFailure(false);
+        setMessage(res.data.message);
+      })
+      .catch((err) => {
+        setSuccess(false);
+        setFailure(true);
+        setMessage(err.response.data.message)
+      });
+  }
+
   return (
     <form>
       <h2>Pizza Form</h2>
-      {true && <div className='pending'>Order in progress...</div>}
-      {true && <div className='failure'>Order failed: fullName is required</div>}
+      {success && <div className='pending'>{message}</div>}
+      {failure && <div className='failure'>{message}</div>}
 
       <div className="input-group">
         <div>
@@ -26,6 +78,7 @@ export default function PizzaForm() {
             name="fullName"
             placeholder="Type full name"
             type="text"
+            onChange={handleChangeFullName}
           />
         </div>
       </div>
@@ -33,7 +86,7 @@ export default function PizzaForm() {
       <div className="input-group">
         <div>
           <label htmlFor="size">Size</label><br />
-          <select data-testid="sizeSelect" id="size" name="size">
+          <select data-testid="sizeSelect" id="size" name="size" onChange={handleChangeSize}>
             <option value="">----Choose size----</option>
             <option value="S">Small</option>
             <option value="M">Medium</option>
@@ -42,7 +95,7 @@ export default function PizzaForm() {
         </div>
       </div>
 
-      <div className="input-group">
+      <div className="input-group" onChange={handleChangeToppings} id="toppingsInput">
         <label>
           <input data-testid="checkPepperoni" name="1" type="checkbox" />
           Pepperoni<br /></label>
@@ -59,7 +112,7 @@ export default function PizzaForm() {
           <input data-testid="checkHam" name="5" type="checkbox" />
           Ham<br /></label>
       </div>
-      <input data-testid="submit" type="submit" />
+      <input data-testid="submit" type="submit" onClick={submitOrder}/>
     </form>
   )
 }
