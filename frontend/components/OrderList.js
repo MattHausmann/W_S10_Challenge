@@ -22,7 +22,22 @@ export default function OrderList() {
     setFilter(event.target.textContent);
   }
 
-  
+  function makeOrderString(order) {
+    let result = order.customer;
+    result += " ordered a size ";
+    result += order.size;
+    result += " with ";
+    if(order.toppings) {
+      result += order.toppings.length;
+      result += " topping";
+      if(order.toppings.length > 1) {
+        result += "s";
+      }
+    } else {
+      result += "no toppings";
+    }
+    return result;
+  }
   return (
     <div id="orderList">
       <h2>Pizza Orders</h2>
@@ -32,7 +47,7 @@ export default function OrderList() {
             return (
               <li key={order.id}>
                 <div>
-                  {order.customer} ordered a size {order.size} with {order.toppings?order.toppings.length:"no"} topping{order.toppings?order.toppings.length==1?"":"s":"s"}
+                  {makeOrderString(order)}
                 </div>
               </li>
           )})        }

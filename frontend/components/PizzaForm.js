@@ -63,6 +63,17 @@ export default function PizzaForm() {
         setFailure(true);
         setMessage(err.response.data.message)
       });
+      setFullName('');
+      document.getElementById('fullName').value='';
+      setToppings([]);
+      const toppingsInput = document.getElementById('toppingsInput').querySelectorAll('label');
+      for(let i = 0; i < toppingsInput.length; i++) {
+        let t = toppingsInput[i].querySelector('input');
+        t.checked = false;
+      }
+      setSize('');
+      document.getElementById('size').value = '';
+  
   }
 
   return (
