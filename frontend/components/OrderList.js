@@ -1,17 +1,32 @@
-import React from 'react'
+import axios from 'axios';
+import React, {useState} from 'react'
+
+let getUrl = 'http://localhost:9009/api/pizza/history';
+
+
+
+
 
 export default function OrderList() {
-  const orders = []
+
+  const [orders, setOrders] = useState([]);
+  axios
+    .get(getUrl)
+   .then((res) => {setOrders(res.data);})
+    .catch((err) => console.log(err));
+
+
+  
   return (
     <div id="orderList">
       <h2>Pizza Orders</h2>
       <ol>
         {
-          orders.map(() => {
+          orders.map((order) => {
             return (
-              <li key={1}>
+              <li key={order.id}>
                 <div>
-                  order details here
+                  {order.customer} ordered a size {order.size} with {order.toppings?order.toppings.length:"no"} topping{order.toppings?order.toppings.length==1?"":"s":"s"}
                 </div>
               </li>
             )

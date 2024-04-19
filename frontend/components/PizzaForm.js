@@ -44,6 +44,8 @@ export default function PizzaForm() {
 
   function submitOrder(event) {
     event.preventDefault();
+    setSuccess(true);
+    setMessage('Order in progress...');
     let orderObj = {
       fullName: fullName,
       size: size,
